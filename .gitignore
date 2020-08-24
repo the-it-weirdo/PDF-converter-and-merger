@@ -1,2 +1,6 @@
 Test/
 __pycache__
+*.pdf
+*.jpeg
+*.png
+*.jpg

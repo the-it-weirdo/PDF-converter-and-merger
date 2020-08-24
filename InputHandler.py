@@ -1,19 +1,23 @@
+from Utilities import *
+
+output = TerminalOutput()
+
 class InputHandler:
 
 
     def menu(self, options:list):
-        print("Choose option: ")
+        print("\n\nChoose option: ")
         for idx, option in enumerate(options):
             print(f"{idx+1}: {option}")
         choosen = False
         while not choosen:
             choice = input("Enter your choice: ")
             if not choice.isnumeric():
-                print("Invalid choice.")
+                output.error("Invalid choice.")
             else:
                 choice = int(choice)
                 if choice < 1 or choice > len(options):
-                    print("Invalid choice.")
+                    output.error("Invalid choice.")
                 else:
                     choosen = options[choice-1]
         return choosen
@@ -35,7 +39,7 @@ class InputHandler:
                             raise Exception(f"Invalid index: {c}")
                     choosen_files = [files[c-1] for c in choice]
                 except Exception as e:
-                    print(f"Invalid input. {e}")
+                    output.error(f"Invalid input. {e}")
         return choosen_files
 
     # def input_path(self, prompt: str):

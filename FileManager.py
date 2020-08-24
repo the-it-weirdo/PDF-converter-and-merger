@@ -1,4 +1,7 @@
 import os, tempfile
+from Utilities import *
+
+output = TerminalOutput()
 
 
 class FileManager:
@@ -7,7 +10,7 @@ class FileManager:
         try:
             return {f: os.path.join(path, f) for f in os.listdir(path) if f.endswith(format)}
         except Exception as e:
-            print(f"Error occurred: {e}")
+            output.error(f"Error occurred: {e}")
 
 
     def is_path_writable(self, path:str):

@@ -1,38 +1,47 @@
 from InputHandler import *
 from FileManager import *
 from PDFHandler import *
+from Utilities import *
+
 
 
 def __handle_pdf__():
     all_pdfs = fileManager.list_files(base_path, '.pdf')
-    print(f"Found {len(all_pdfs)} PDFs in directory: {base_path}.")
+    output.info(f"Found {len(all_pdfs)} PDFs in directory: {base_path}.")
     if len(all_pdfs) > 0:
         selected = inputHandler.select_files(list(all_pdfs.keys()))
         selected = {key: all_pdfs.get(key) for key in selected}
         appender = pdfHandler.append_pdfs(sorted(list(selected.values())))
-        print(f"Total pages after appending: {len(appender.pages)}")
+        output.info(f"Total pages after appending: {len(appender.pages)}")
         if len(appender.pages) > 0:
             outfilename = input('Enter output filename: ')
             with open(outfilename+'.pdf', 'wb') as fout:
                 appender.write(fout)
-                print(f"PDF Merge complete. Output: ./{outfilename}.pdf")
+                output.success(f"PDF Merge complete. Output: ./{outfilename}.pdf")
         else:
-            print("No pages to append.")
+            output.error("No pages to append.")
 
 
 def __handle_image__():
     all_images = {**fileManager.list_files(base_path, '.jpg'), **fileManager.list_files(base_path, '.jpeg'), **fileManager.list_files(base_path, '.png')}
-    print(f"Found {len(all_images)} PDFs in directory: {base_path}.")
+    output.info(f"Found {len(all_images)} images in directory: {base_path}.")
     if len(all_images) > 0:
         selected = inputHandler.select_files(list(all_images.keys()))
         selected = {key: all_images.get(key) for key in selected}
         try:
-            pdf_images = pdfHandler.convert_to_pdf(sorted(list(selected.values())), 'image')
-            outfilename = input('Enter output filename: ')
-            with open(outfilename+'.pdf', 'wb') as fout:
-                fout.write(pdf_images)
-                print(f"Image conversion complete. Output: ./{outfilename}.pdf")
-        except:
+            for item in selected:
+                output.info(f"Converting {item}...")
+                converted_image = pdfHandler.convert_to_pdf(selected.get(item), 'image')
+                if converted_image is not None:
+                    outfilename = item.split('.')[0]
+                    with open(outfilename+'.pdf', 'wb') as fout:
+                        fout.write(converted_image)
+                    output.success(f"Image conversion complete. Output: ./{outfilename}.pdf")
+                    # pdf_images = pdfHandler.convert_to_pdf(sorted(list(selected.values())), 'image') # for all images in a single pdf.
+                else:
+                    output.error(f"Failed to convert {item}.")
+        except Exception as e:
+            output.error(f"Some unexpected error occurred. Error: {e}")
             return
         
 
@@ -44,6 +53,7 @@ base_path = ''
 inputHandler = InputHandler()
 fileManager = FileManager()
 pdfHandler = PDFHandler()
+output = TerminalOutput()
 
 
 
@@ -64,6 +74,6 @@ while(True):
             base_path = input(f'Enter directory path for {name.get(function)}: ')
             if fileManager.is_path_exists(base_path) == False:
                 base_path = ''
-                print('Invalid path.')
+                output.error('Invalid path.')
     function()
     base_path = ''
