@@ -23,7 +23,7 @@ def __handle_pdf__():
 
 
 def __handle_image__():
-    all_images = {**fileManager.list_files(base_path, '.jpg'), **fileManager.list_files(base_path, '.jpeg'), **fileManager.list_files(base_path, '.png')}
+    all_images = {**fileManager.list_files(base_path, '.jpg'), **fileManager.list_files(base_path, '.jpeg'), **fileManager.list_files(base_path, '.png'), **fileManager.list_files(base_path, '.JPG')}
     output.info(f"Found {len(all_images)} images in directory: {base_path}.")
     if len(all_images) > 0:
         selected = inputHandler.select_files(list(all_images.keys()))
